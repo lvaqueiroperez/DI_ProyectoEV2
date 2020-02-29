@@ -52,7 +52,7 @@ class VentanaGestion(Gtk.Window):
         # print(cursor.fetchmany(2))
 
         # Los resultados se devuelven en una lista (o lista de tuplas si hay varios valores), podemos iterar con ellos !!!
-        print("mostramos los resultados de la consulta con fetchall:")
+
         for elemento in cursor.fetchall():
             dni = elemento[0]
             nombre = elemento[1]
@@ -87,53 +87,56 @@ class VentanaGestion(Gtk.Window):
         # Ponemos el TreeView en nuestra box
         boxV.pack_start(vista, True, True, 0)
 
-        # CREAMOS UNA CELDA DE TEXTO
+        # CREAMOS UNA CELDA DE TEXTO PARA EL DNI
         celdaText = Gtk.CellRendererText()
         celdaText.set_property("editable", False)
 
-        # CREAMOS UNA COLUMNA PARA EL TREEVIEW
-        columnaHotel = Gtk.TreeViewColumn('DNI', celdaText,
+        # CREAMOS UNA COLUMNA PARA EL TREEVIEW CON EL DNI
+        columnaDni = Gtk.TreeViewColumn('DNI', celdaText,
                                           text=0)  # OJO!!! de la columna del modelo qué columna va a mostrar la vista: la 0 "Hotel ..."
 
-        # CREAMOS CELDA TEXTO DIRECCION
+        # CREAMOS CELDA TEXTO NOMBRE
+        celdaNombre = Gtk.CellRendererText()
+        celdaNombre.set_property("editable", False)
+        celdaNombre.connect("edited", self.on_celdaDireccion_edited, self.modelo)
+
+        # CREAMOS COLUMNA NOMBRE
+        columnaNombre = Gtk.TreeViewColumn('NOMBRE', celdaNombre, text=1)
+
+        #CREAMOS CELDA TEXTO APELLIDO1
+        celdaApellido1 = Gtk.CellRendererText()
+        #CREAMOS COLUMNA PARA APELLIDO1
+        columnaApellido1 = Gtk.TreeViewColumn('APELLIDO1', celdaApellido1, text=2)
+        columnaApellido1.set_sort_column_id(0)  # si hacemos clic en la columna ocupacion la ordena
+
+        # CREAMOS UNA CELDA TEXTO APELLIDO2
+        celdaApellido2 = Gtk.CellRendererText()
+        #celdaApellido2.connect("toggled", self.on_celdaCheck_toggled, self.modelo)
+
+        #Y UNA COLUMNA PARA EL APELLIDO2:
+
+        columnaApellido2 = Gtk.TreeViewColumn('APELLIDO2', celdaApellido2, text=3)
+
+        #CELDA PARA UNA DIRECCION:
         celdaDireccion = Gtk.CellRendererText()
-        celdaDireccion.set_property("editable", True)
-        celdaDireccion.connect("edited", self.on_celdaDireccion_edited, self.modelo)
+        # COLUMNA PARA DIRECCION
+        columnaDireccion = Gtk.TreeViewColumn('DIRECCION', celdaDireccion, text = 4)
 
-        # CREAMOS COLUMNA DIRECCION
-        columnaDireccion = Gtk.TreeViewColumn('NOMBRE', celdaDireccion, text=1)
-        celdaOcupacion = Gtk.CellRendererProgress()
-        columnaOcupacion = Gtk.TreeViewColumn('APELLIDO1', celdaOcupacion, value=2)
-        columnaOcupacion.set_sort_column_id(0)  # si hacemos clic en la columna ocupacion la ordena
+        # CREAMOS UNA CELDA PARA TELF
+        celdaTelf = Gtk.CellRendererText()
 
-        # CREAMOS UNA CELDA DE CHECK
-        celdaCheck = Gtk.CellRendererToggle()
-        celdaCheck.connect("toggled", self.on_celdaCheck_toggled, self.modelo)
+        # Y UNA COLUMNA PARA TELF
+        columnaTelf = Gtk.TreeViewColumn('TELEFONO', celdaTelf, text=5)
 
-        # Y UNA COLUMNA MÁS
-        columnaMascotas = Gtk.TreeViewColumn('APELLIDO2', celdaCheck, active=3)
 
-        # CREAMOS UNA CELDA PARA UN COMBO BOX
-        celdaCombo = Gtk.CellRendererCombo()
-        celdaCombo.set_property("editable", True)  # que sea editable
-        celdaCombo.set_property("model", modeloCat)
-        celdaCombo.set_property("text-column", 0)  # muestra la columna 0
-        celdaCombo.set_property("has-entry", False)  # le da la oportunidad al usuario de añadir nuevos valores
-        celdaCombo.connect("changed", self.on_celdaCombo_changed, self.modelo, modeloCat)
 
-        # Y UNA COLUMNA PARA ESA CELDA
-        columnaCategoria = Gtk.TreeViewColumn('DIRECCION', celdaCombo, text=4)
-
-        #COLUMNA PRUEBA
-        columnaTelf = Gtk.TreeViewColumn('TELEFONO', celdaCombo, text=5)
-
-        vista.append_column(columnaHotel)  # añadir al treeview la columna
+        vista.append_column(columnaDni)  # añadir al treeview la columna
+        vista.append_column(columnaNombre)
+        vista.append_column(columnaApellido1)
+        vista.append_column(columnaApellido2)
         vista.append_column(columnaDireccion)
-        vista.append_column(columnaOcupacion)
-        vista.append_column(columnaMascotas)
-        vista.append_column(columnaCategoria)
-        #ponemos la de prueba
         vista.append_column(columnaTelf)
+
 
         # MENÚ DE ABAJO:
         boxH = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
