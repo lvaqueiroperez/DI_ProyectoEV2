@@ -1,11 +1,12 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 import sqlite3 as dbapi
 
 
+# VENTANA PRINCIPAL
 class VentanaPrincipal():
     def __init__(self):
         builder = Gtk.Builder()
@@ -23,53 +24,225 @@ class VentanaPrincipal():
     # FUNCIONES
 
 
-class VentanaGestion():
+# VENTANA DE GESTIÓN (aquí haremos todos lo relacionado con la BD)
+# TreeView aquí
+class VentanaGestion(Gtk.Window):
     def __init__(self):
-        "BD AQUI, PRIMERO LA CREAMOS CON SUS DATOS Y LUEGO SIMPLEMENTE LA LEEMOS Y OPERAMOS CON ELLA EN CASO NECESARIO"
-        "TENDREMOS QUE TENERLA ABIERTA PARA QUE AL CLICKAR EN UN BOTÓN PODAMOS ACTIVAR EL EVENTO DE INSERTAR/BORRAR/MODIFICAR"
+        Gtk.Window.__init__(self, title="Gestión de Clientes")
+        self.set_default_size(800, 600)
 
-        print("Versión DBAPI:")
+        boxV = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        print(dbapi.apilevel)
+        self.modelo = Gtk.ListStore(str, str, str, str, str, str)
 
-        # Ver el "Modo de Thread" de nuestro sqlite
-        """
-        1 --> single-thread
-        2 --> multi-thread  Se pueden usar varios threads PERO solo uno se podrá conectar a la BD a la vez  
-        3 --> Serialized  Se pueden usar con la BD varios threads sin restrinciones"""
-        print(dbapi.threadsafety)
+        # PARA HACER EL APPEND, NECESITAMOS CONSEGUIR LOS DATOS DE LA BD, LOS GUARDAREMOS EN VARIABLES STR
 
-        print(dbapi.paramstyle)
+        # ************************BD**********************************
+        bd1 = dbapi.connect("baseDatosPrueba.dat")
+        # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
+        cursor = bd1.cursor()
 
-        try:
-            bd1 = dbapi.connect("baseDatosPrueba.dat")
-            # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
-            cursor = bd1.cursor()
+        # Para devolver (seleccionar) valores en una BD o tabla de una BD:
+        cursor.execute("""SELECT * FROM clientes""")
+        # Esto nos dará el primer valor de la tabla en una tupla tras hacer el select deseado
+        # print(cursor.fetchone())
+        # Esto nos dará todos los datos que hayamos seleccionado en el select:
+        # print(cursor.fetchall())
+        # Y esto los n primeros resultados del select:
+        # print(cursor.fetchmany(2))
 
-            # CREAMOS TABLA:
-            cursor.execute(
-                "create table clientes(dni text,nombre text, apellido1 text, apellido2 text, direc text, telf text)")
-            bd1.commit()
+        # Los resultados se devuelven en una lista (o lista de tuplas si hay varios valores), podemos iterar con ellos !!!
+        print("mostramos los resultados de la consulta con fetchall:")
+        for elemento in cursor.fetchall():
+            dni = elemento[0]
+            nombre = elemento[1]
+            apellido1 = elemento[2]
+            apellido2 = elemento[3]
+            direc = elemento[4]
+            telf = elemento[5]
 
-            # INSERTAMOS
-            listaClientes = [('31143-U', 'Jandro', 'Perez', 'Alvarez', 'Avenida1', '555444777'),
-                             ('22222-A', 'Pepe', 'Gonzalez', 'Rivas', 'Avenida2', '111222333')]
+            self.modelo.append([dni,nombre,apellido1,apellido2,direc,telf])
 
-            # OJO!!! "cursor.executemany()" recorre las listas y sus valores uno a uno y los mete en la BD
-            cursor.executemany("INSERT INTO clientes VALUES(?,?,?,?,?,?)", listaClientes)
+        # ************************************************************
+        # FILTROS (AHORA NUESTRO MODELO ESTARÁ FILTRADO Y SE PASARÁ A LLAMAR "modeloFIltrado")
+        self.filtradoOcupacion = False
+        modeloFiltrado = self.modelo.filter_new()
+        # PONEMOS VISIBLE NUESTRO MODELO EN EL TREEVIEW
+        modeloFiltrado.set_visible_func(self.ocupacion)
+        self.modelo.set_sort_func(0, self.ordeAlfabetico)
 
-            bd1.commit()
+        # MODELO EXTRA
+        modeloCat = Gtk.ListStore(str, int)
+        modeloCat.append(["*", 1])
+        modeloCat.append(["**", 2])
+        modeloCat.append(["***", 3])
+        modeloCat.append(["****", 4])
+        modeloCat.append(["*****", 5])
 
-        # EXCEPCIONES
-        except dbapi.OperationalError as errorOperacion:
-            print("Error (OperationalError): " + str(errorOperacion))
-        except dbapi.DatabaseError as errorBD:
-            print("Error (DataBaseError): " + str(errorBD))
+        # CONSTRUÍMOS EL TREE VIEW CON EL MODELO FILTRADO
+        vista = Gtk.TreeView(model=modeloFiltrado)
+        # Obtenemos las selecciones del TreeView y les asociamos un evento con una función que manejaremos más adelante
+        seleccion = vista.get_selection()
+        seleccion.connect("changed", self.on_vista_changed)
+        # Ponemos el TreeView en nuestra box
+        boxV.pack_start(vista, True, True, 0)
 
-        finally:
-            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
-            cursor.close()
-            bd1.close()
+        # CREAMOS UNA CELDA DE TEXTO
+        celdaText = Gtk.CellRendererText()
+        celdaText.set_property("editable", False)
+
+        # CREAMOS UNA COLUMNA PARA EL TREEVIEW
+        columnaHotel = Gtk.TreeViewColumn('DNI', celdaText,
+                                          text=0)  # OJO!!! de la columna del modelo qué columna va a mostrar la vista: la 0 "Hotel ..."
+
+        # CREAMOS CELDA TEXTO DIRECCION
+        celdaDireccion = Gtk.CellRendererText()
+        celdaDireccion.set_property("editable", True)
+        celdaDireccion.connect("edited", self.on_celdaDireccion_edited, self.modelo)
+
+        # CREAMOS COLUMNA DIRECCION
+        columnaDireccion = Gtk.TreeViewColumn('NOMBRE', celdaDireccion, text=1)
+        celdaOcupacion = Gtk.CellRendererProgress()
+        columnaOcupacion = Gtk.TreeViewColumn('APELLIDO1', celdaOcupacion, value=2)
+        columnaOcupacion.set_sort_column_id(0)  # si hacemos clic en la columna ocupacion la ordena
+
+        # CREAMOS UNA CELDA DE CHECK
+        celdaCheck = Gtk.CellRendererToggle()
+        celdaCheck.connect("toggled", self.on_celdaCheck_toggled, self.modelo)
+
+        # Y UNA COLUMNA MÁS
+        columnaMascotas = Gtk.TreeViewColumn('APELLIDO2', celdaCheck, active=3)
+
+        # CREAMOS UNA CELDA PARA UN COMBO BOX
+        celdaCombo = Gtk.CellRendererCombo()
+        celdaCombo.set_property("editable", True)  # que sea editable
+        celdaCombo.set_property("model", modeloCat)
+        celdaCombo.set_property("text-column", 0)  # muestra la columna 0
+        celdaCombo.set_property("has-entry", False)  # le da la oportunidad al usuario de añadir nuevos valores
+        celdaCombo.connect("changed", self.on_celdaCombo_changed, self.modelo, modeloCat)
+
+        # Y UNA COLUMNA PARA ESA CELDA
+        columnaCategoria = Gtk.TreeViewColumn('DIRECCION', celdaCombo, text=4)
+
+        #COLUMNA PRUEBA
+        columnaTelf = Gtk.TreeViewColumn('TELEFONO', celdaCombo, text=5)
+
+        vista.append_column(columnaHotel)  # añadir al treeview la columna
+        vista.append_column(columnaDireccion)
+        vista.append_column(columnaOcupacion)
+        vista.append_column(columnaMascotas)
+        vista.append_column(columnaCategoria)
+        #ponemos la de prueba
+        vista.append_column(columnaTelf)
+
+        # MENÚ DE ABAJO:
+        boxH = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.txtHotel = Gtk.Entry()
+        self.txtDireccion = Gtk.Entry()
+        self.txtOcupacion = Gtk.Entry()
+        self.chkMascota = Gtk.CheckButton()
+        self.cmbCategoria = Gtk.ComboBox()
+        btnNovo = Gtk.Button("Novo")
+        btnNovo.connect("clicked", self.on_btnNovo_clicked, self.modelo)
+        boxH.pack_start(self.txtHotel, True, False, 0)
+        boxH.pack_start(self.txtDireccion, True, False, 0)
+        boxH.pack_start(self.txtOcupacion, True, False, 0)
+        boxH.pack_start(self.chkMascota, True, False, 0)
+        boxH.pack_start(self.cmbCategoria, True, False, 0)
+        boxH.pack_start(btnNovo, True, False, 0)
+        boxV.pack_start(boxH, True, False, 0)
+        caixaFiltro = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.chkFiltro = Gtk.CheckButton(label='Filtro ocupación')
+        self.chkFiltro.connect("toggled", self.on_chkFiltro_toggled, modeloFiltrado)
+        caixaFiltro.pack_start(self.chkFiltro, True, True, 0)
+
+        boxV.pack_start(caixaFiltro, True, False, 0)
+
+        self.cmbCategoria.set_model(modeloCat)
+        self.cmbCategoria.pack_start(celdaText, True)
+        self.cmbCategoria.add_attribute(celdaText, "text", 0)
+
+        # AÑADIMOS LA CAJA A LA VENTANA PRINCIPAL
+        self.add(boxV)
+
+        # FALTA
+        # MOSTRAMOS TODOS
+        self.show_all()
+        self.connect("destroy", Gtk.main_quit)
+
+        # FUNCIONES, NECESARIAS PARA QUE SE MUESTREN NUESTROS ELEMENTOS POR PANTALLA !!!!
+
+    def on_celdaCheck_toggled(self, control, fila, modelo):  # nos deja marcar/desmarcar las opciones
+        """"""
+
+    def on_celdaDireccion_edited(self, control, fila, texto, modelo):  # podemos editar la celda de direcciones
+        """"""
+
+    def on_btnNovo_clicked(self, boton, modelo):
+        """"""
+
+    def on_celdaCombo_changed(self, control, posicion, indice, modelo, modeloCat):
+        """"""
+
+    def on_vista_changed(self, seleccion):
+        """"""
+
+    # SIN ESTA FUNCIÓN NO SE MUESTRA???
+    def ocupacion(self, modelo, punteiro, a):
+        if self.filtradoOcupacion is None or self.filtradoOcupacion is False:
+            return True
+        else:
+            return self.modelo[punteiro][2]
+
+    def on_chkFiltro_toggled(self, control, modeloFiltrado):
+        """"""
+
+    def ordeAlfabetico(modelo, fila1, fila2, datosUsuario):
+        """"""
+
+    """
+    # ABRIR Y CERRAR LA BD CUANDO SE HAGA CADA OPERACIÓN
+    #CREAR LA TABLA DE LA BD E INSERTAR 2 FILAS DE EJEMPLO:
+    print("Versión DBAPI:")
+
+    print(dbapi.apilevel)
+
+    print(dbapi.threadsafety)
+
+    print(dbapi.paramstyle)
+
+    try:
+        bd1 = dbapi.connect("baseDatosPrueba.dat")
+        # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
+        cursor = bd1.cursor()
+
+        # CREAMOS TABLA:
+        cursor.execute(
+            "create table clientes(dni text,nombre text, apellido1 text, apellido2 text, direc text, telf text)")
+        bd1.commit()
+
+        # INSERTAMOS
+        listaClientes = [('31143-U', 'Jandro', 'Perez', 'Alvarez', 'Avenida1', '555444777'),
+                         ('22222-A', 'Pepe', 'Gonzalez', 'Rivas', 'Avenida2', '111222333')]
+
+        # OJO!!! "cursor.executemany()" recorre las listas y sus valores uno a uno y los mete en la BD
+        cursor.executemany("INSERT INTO clientes VALUES(?,?,?,?,?,?)", listaClientes)
+
+        bd1.commit()
+
+
+
+    # EXCEPCIONES
+    except dbapi.OperationalError as errorOperacion:
+        print("Error (OperationalError): " + str(errorOperacion))
+    except dbapi.DatabaseError as errorBD:
+        print("Error (DataBaseError): " + str(errorBD))
+
+    finally:
+        # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+        cursor.close()
+        bd1.close()
+    """
 
 
 # EMPEZAMOS ABRIENDO LA PRINCIPAL, PROBAR A VER QUE PASA SI PONEMOS OTRA CLASE
