@@ -190,21 +190,51 @@ class VentanaGestion(Gtk.Window):
         boxH.pack_start(self.txtTelf, True, False, 0)
         boxH.pack_start(btnNuevo, True, False, 0)
 
+        # AÑADIMOS LA FUNCIONALIDAD DE BORRAR
+        boxH2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.txtDniBorrar = Gtk.Entry()
+        self.btnBorrar = Gtk.Button("Borrar Cliente")
+        # BORRAREMOS TAMBIÉN DE LA BASE DE DATOS EL CLIENTE Y REFRESCAREMOS EL TREE VIEW DIRECTAMENTE
+        self.btnBorrar.connect("clicked", self.on_btnBorrar_clicked, self.modelo)
+
+        boxH2.pack_start(self.txtDniBorrar, True, False, 0)
+        boxH2.pack_start(self.btnBorrar, True, False, 0)
+
+        # AÑADIMOS LA FUNCIONALIDAD DE CONSULTAR
+        boxH3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.cboxCampo = Gtk.ComboBox()
+
+        # MODELO CBOX
+        modeloCamp = Gtk.ListStore(str, int)
+        modeloCamp.append(["dni", 1])
+        modeloCamp.append(["nombre", 2])
+        modeloCamp.append(["apellido1", 3])
+        modeloCamp.append(["apellido2", 4])
+        modeloCamp.append(["direc", 5])
+        modeloCamp.append(["telf", 6])
+
+        self.cboxCampo.set_model(modeloCamp)
+
+        self.cboxCampo.connect("changed", self.on_cboxCampo_changed)
+
+        # AÑADIMOS RENDERER AL CBOX
+        renderer = Gtk.CellRendererText()
+        self.cboxCampo.pack_start(renderer, True)
+
+        # QUEREMOS QUE SE MUESTREN LOS CAMPOS, NO LOS NÚMEROS QUE HEMOS PUESTO, POR ESO PONEMOS UN 0, PORQUE EL PARÁMETRO ES EL PRIMERO QUE PUSIMOS EN EL MODELO
+        self.cboxCampo.add_attribute(renderer, "text", 0)
+
+        #POR ÚLTIMO, HACEMOS QUE SE MUESTRE EL DNI POR DEFECTO EN EL CBOX (????)
+
+
+        boxH3.pack_start(self.cboxCampo, True, False, 0)
+
+        self.txtCampo = Gtk.Entry()
+        boxH3.pack_start(self.txtCampo, True, False, 0)
+
         boxV.pack_start(boxH, True, False, 0)
-
-        # ?
-        """
-        caixaFiltro = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.chkFiltro = Gtk.CheckButton(label='Filtro ocupación')
-        self.chkFiltro.connect("toggled", self.on_chkFiltro_toggled, modeloFiltrado)
-        caixaFiltro.pack_start(self.chkFiltro, True, True, 0)
-
-        boxV.pack_start(caixaFiltro, True, False, 0)
-        """
-
-        # self.txtDirec.set_model(modeloCat)
-        # self.txtDirec.pack_start(celdaText, True)
-        # self.txtDirec.add_attribute(celdaText, "text", 0)
+        boxV.pack_start(boxH2, True, False, 0)
+        boxV.pack_start(boxH3, True, False, 0)
 
         # AÑADIMOS LA CAJA A LA VENTANA PRINCIPAL
         self.add(boxV)
@@ -261,6 +291,51 @@ class VentanaGestion(Gtk.Window):
             # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
             cursor2.close()
             bd2.close()
+
+    def on_btnBorrar_clicked(self, boton, modelo):
+
+        cliente = (self.txtDniBorrar.get_text())
+
+        # BORRAMOS EL CLIENTE ESPECIFICADO DE LA BD Y REFRESCAMOS EL TREE VIEW
+        try:
+            self.bd3 = dbapi.connect("baseDatosPrueba.dat")
+            self.cursor3 = self.bd3.cursor()
+
+            # ESTE EN CONCRETO NO IBA BIEN CON LAS INTERROGACIONES
+            self.cursor3.execute("""DELETE FROM clientes WHERE dni = '""" + cliente + """'""")
+            self.bd3.commit()
+
+            # REFRESCAMOS
+            modelo.clear()
+
+            self.cursor3.execute("""SELECT * FROM clientes""")
+
+            for elemento in self.cursor3.fetchall():
+                dni = elemento[0]
+                nombre = elemento[1]
+                apellido1 = elemento[2]
+                apellido2 = elemento[3]
+                direc = elemento[4]
+                telf = elemento[5]
+
+                self.modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            self.bd3.commit()
+
+        except dbapi.OperationalError as errorOperacion:
+            print("Error (OperationalError): " + str(errorOperacion))
+        except dbapi.DatabaseError as errorBD:
+            print("Error (DataBaseError): " + str(errorBD))
+
+        finally:
+            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+            self.cursor3.close()
+            self.bd3.close()
+
+    # PARA CONSULTAR:
+    # EN UN COMBOBOX ESCOGEREMOS EL CAMPO POR EL QUE QUEREMOS CONSULTAR Y EN UN TXT ESPECIFICAREMOS EL CAMPO
+    def on_cboxCampo_changed(self):
+        """"""
 
     def on_celdaCombo_changed(self, control, posicion, indice, modelo, modeloCat):
         """"""
