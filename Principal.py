@@ -6,6 +6,7 @@ from gi.repository import Gtk, GLib
 import sqlite3 as dbapi
 
 
+# PONER GRIDS EN VEZ DE BOX ?????????????????????????
 # VENTANA PRINCIPAL
 class VentanaPrincipal():
     def __init__(self):
@@ -31,6 +32,7 @@ class VentanaGestion(Gtk.Window):
 
     def __init__(self):
         # EMPEZAMOS EL TRY AQUÍ PARA QUE NOS PILLE EL MODELO
+
         try:
             Gtk.Window.__init__(self, title="Gestión de Clientes")
             self.set_default_size(800, 600)
@@ -169,6 +171,14 @@ class VentanaGestion(Gtk.Window):
         vista.append_column(columnaTelf)
 
         # MENÚ DE ABAJO: (HABRÁ QUE HACDER UN BOTÓN PARA UPDATE???? O IGUAL PODEMOS HACER EL APPEND EN EL MISMO MÉTODO CLICK)
+
+        # ANTES DE NADA, EL BOTÓN DE MOSTRARLOS A TODOS
+        boxTodos = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.btnTodos = Gtk.Button("VOLVER A MOSTRAR TODOS LOS CLIENTES")
+        self.btnTodos.connect("clicked", self.on_btnTodos_clicked, self.modelo)
+        #
+        boxTodos.pack_start(self.btnTodos, True, False, 0)
+        boxV.pack_start(boxTodos, True, False, 0)
         # PARA AÑADIR CLIENTES A LA BD:
         # BOX DONDE PONDREMOS TODOS LO NECESARIO
         boxH = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -203,6 +213,8 @@ class VentanaGestion(Gtk.Window):
         # AÑADIMOS LA FUNCIONALIDAD DE CONSULTAR
         boxH3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.cboxCampo = Gtk.ComboBox()
+        self.btnBuscar = Gtk.Button("Buscar")
+        self.btnBuscar.connect("clicked", self.on_btnBuscar_clicked, self.cboxCampo, self.modelo)
 
         # MODELO CBOX
         modeloCamp = Gtk.ListStore(str, int)
@@ -215,7 +227,7 @@ class VentanaGestion(Gtk.Window):
 
         self.cboxCampo.set_model(modeloCamp)
 
-        self.cboxCampo.connect("changed", self.on_cboxCampo_changed)
+        # self.cboxCampo.connect("changed", self.on_cboxCampo_changed)
 
         # AÑADIMOS RENDERER AL CBOX
         renderer = Gtk.CellRendererText()
@@ -224,13 +236,13 @@ class VentanaGestion(Gtk.Window):
         # QUEREMOS QUE SE MUESTREN LOS CAMPOS, NO LOS NÚMEROS QUE HEMOS PUESTO, POR ESO PONEMOS UN 0, PORQUE EL PARÁMETRO ES EL PRIMERO QUE PUSIMOS EN EL MODELO
         self.cboxCampo.add_attribute(renderer, "text", 0)
 
-        #POR ÚLTIMO, HACEMOS QUE SE MUESTRE EL DNI POR DEFECTO EN EL CBOX (????)
-
+        # POR ÚLTIMO, HACEMOS QUE SE MUESTRE EL DNI POR DEFECTO EN EL CBOX (????)
 
         boxH3.pack_start(self.cboxCampo, True, False, 0)
 
         self.txtCampo = Gtk.Entry()
         boxH3.pack_start(self.txtCampo, True, False, 0)
+        boxH3.pack_start(self.btnBuscar, True, False, 0)
 
         boxV.pack_start(boxH, True, False, 0)
         boxV.pack_start(boxH2, True, False, 0)
@@ -334,6 +346,167 @@ class VentanaGestion(Gtk.Window):
 
     # PARA CONSULTAR:
     # EN UN COMBOBOX ESCOGEREMOS EL CAMPO POR EL QUE QUEREMOS CONSULTAR Y EN UN TXT ESPECIFICAREMOS EL CAMPO
+    # HACER UN CLEAR DEL MODELO Y PONERLE LOS RESULTADOS DE LA BÚSQUEDA
+    # PONER TODOS LOS RESULTADOS SI SE BUSCA CON LA CASILLA EN BLANCO??
+    # BOTÓN PARA VOLVER A MOSTRAR TODOS LOS RESULTADOS !!!
+    def on_btnBuscar_clicked(self, boton, combo, modelo):
+
+        cboxPuntero = combo.get_active_iter()
+
+        cboxModelo = combo.get_model()
+
+        # AL PARECER, EN SQLITE NO PODEMOS PONER LA CONDICIÓN CON UNA VARIABLE EXTERNA, SOLO EL VALOR DE LA CONDICIÓN
+        # POR LO QUE TENDREMOS QUE TRABAJAR CON "IF"
+        campo = cboxModelo[cboxPuntero][0]
+
+        # Ya tenemos el campo que usaremos para la consulta, ahora necesitamos su valor concreto
+
+        valorCampo = self.txtCampo.get_text()
+
+        print(campo)
+        print(valorCampo)
+
+        # NOS CONECTAMOS A LA BD:
+        try:
+            modelo.clear()
+            self.bd4 = dbapi.connect("baseDatosPrueba.dat")
+            self.cursor4 = self.bd4.cursor()
+            print("s")
+
+            if (campo == 'dni'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE dni ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            elif (campo == 'nombre'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE nombre ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            elif (campo == 'apellido1'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE apellido1 ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            elif (campo == 'apellido2'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE apellido2 ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            elif (campo == 'direc'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE direc ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+            elif (campo == 'telf'):
+
+                self.cursor4.execute("""SELECT * FROM clientes WHERE telf ='""" + valorCampo + """'""")
+
+                for elemento in self.cursor4.fetchall():
+                    dni = elemento[0]
+                    nombre = elemento[1]
+                    apellido1 = elemento[2]
+                    apellido2 = elemento[3]
+                    direc = elemento[4]
+                    telf = elemento[5]
+
+                    print(dni + 'a')
+                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+
+
+
+        except dbapi.OperationalError as errorOperacion:
+            print("Error (OperationalError): " + str(errorOperacion))
+        except dbapi.DatabaseError as errorBD:
+            print("Error (DataBaseError): " + str(errorBD))
+
+        finally:
+            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+            self.cursor4.close()
+            self.bd4.close()
+
+    def on_btnTodos_clicked(self, boton, modelo):
+
+        modelo.clear()
+
+        try:
+
+            self.bd5 = dbapi.connect("baseDatosPrueba.dat")
+            self.cursor5 = self.bd5.cursor()
+
+            self.cursor5.execute("""SELECT * FROM clientes""")
+
+            for elemento in self.cursor5.fetchall():
+                dni = elemento[0]
+                nombre = elemento[1]
+                apellido1 = elemento[2]
+                apellido2 = elemento[3]
+                direc = elemento[4]
+                telf = elemento[5]
+
+                self.modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+
+        except dbapi.OperationalError as errorOperacion:
+            print("Error (OperationalError): " + str(errorOperacion))
+        except dbapi.DatabaseError as errorBD:
+            print("Error (DataBaseError): " + str(errorBD))
+
+        finally:
+            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+            self.cursor5.close()
+            self.bd5.close()
+
     def on_cboxCampo_changed(self):
         """"""
 
@@ -403,5 +576,6 @@ class VentanaGestion(Gtk.Window):
 
 # EMPEZAMOS ABRIENDO LA PRINCIPAL, PROBAR A VER QUE PASA SI PONEMOS OTRA CLASE
 if __name__ == "__main__":
+    VentanaPrincipal()
     VentanaGestion()
     Gtk.main()
