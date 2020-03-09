@@ -66,11 +66,11 @@ class VentanaGestion(Gtk.Window):
                 dni = elemento[0]
                 nombre = elemento[1]
                 apellido1 = elemento[2]
-                apellido2 = elemento[3]
-                direc = elemento[4]
-                telf = elemento[5]
+                direc = elemento[3]
+                telf = elemento[4]
+                servicio = elemento[5]
 
-                self.modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+                self.modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
         except dbapi.OperationalError as errorOperacion:
             print("Error (OperationalError): " + str(errorOperacion))
@@ -91,14 +91,6 @@ class VentanaGestion(Gtk.Window):
         # PONEMOS VISIBLE NUESTRO MODELO EN EL TREEVIEW
         modeloFiltrado.set_visible_func(self.ocupacion)
         self.modelo.set_sort_func(0, self.ordeAlfabetico)
-
-        # MODELO EXTRA
-        modeloCat = Gtk.ListStore(str, int)
-        modeloCat.append(["*", 1])
-        modeloCat.append(["**", 2])
-        modeloCat.append(["***", 3])
-        modeloCat.append(["****", 4])
-        modeloCat.append(["*****", 5])
 
         # CONSTRUÍMOS EL TREE VIEW CON EL MODELO FILTRADO
         vista = Gtk.TreeView(model=modeloFiltrado)
@@ -144,35 +136,37 @@ class VentanaGestion(Gtk.Window):
         columnaApellido1.set_sort_column_id(0)  # si hacemos clic en la columna ocupacion la ordena
 
         # CREAMOS UNA CELDA TEXTO APELLIDO2
-        celdaApellido2 = Gtk.CellRendererText()
-        # celdaApellido2.connect("toggled", self.on_celdaCheck_toggled, self.modelo)
+        celdaDirec = Gtk.CellRendererText()
+        # celdaDirec.connect("toggled", self.on_celdaCheck_toggled, self.modelo)
 
         # Y UNA COLUMNA PARA EL APELLIDO2:
 
-        columnaApellido2 = Gtk.TreeViewColumn('APELLIDO2', celdaApellido2, text=3)
+        columnaDirec = Gtk.TreeViewColumn('DIRECCION', celdaDirec, text=3)
 
         # CELDA PARA UNA DIRECCION:
-        celdaDireccion = Gtk.CellRendererText()
+        celdaTelf = Gtk.CellRendererText()
         # COLUMNA PARA DIRECCION
-        columnaDireccion = Gtk.TreeViewColumn('DIRECCION', celdaDireccion, text=4)
+        columnaTelf = Gtk.TreeViewColumn('TELEFONO', celdaTelf, text=4)
 
         # CREAMOS UNA CELDA PARA TELF
-        celdaTelf = Gtk.CellRendererText()
+        celdaServicio = Gtk.CellRendererText()
 
         # Y UNA COLUMNA PARA TELF
-        columnaTelf = Gtk.TreeViewColumn('TELEFONO', celdaTelf, text=5)
+        columnaServicio = Gtk.TreeViewColumn('SERVICIO', celdaServicio, text=5)
 
         # AÑADIMOS AL TREE VIEW LAS COLUMNAS CON SUS CELDAS
         vista.append_column(columnaDni)
         vista.append_column(columnaNombre)
         vista.append_column(columnaApellido1)
-        vista.append_column(columnaApellido2)
-        vista.append_column(columnaDireccion)
+        vista.append_column(columnaDirec)
         vista.append_column(columnaTelf)
+        vista.append_column(columnaServicio)
 
         # MENÚ DE ABAJO: (HABRÁ QUE HACDER UN BOTÓN PARA UPDATE???? O IGUAL PODEMOS HACER EL APPEND EN EL MISMO MÉTODO CLICK)
 
         # ANTES DE NADA, EL BOTÓN DE MOSTRARLOS A TODOS
+        # CON GLADE MENOS LA PARTE DE BUSCAR
+        """
         boxTodos = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.btnTodos = Gtk.Button("VOLVER A MOSTRAR TODOS LOS CLIENTES")
         self.btnTodos.connect("clicked", self.on_btnTodos_clicked, self.modelo)
@@ -185,9 +179,9 @@ class VentanaGestion(Gtk.Window):
         self.txtDni = Gtk.Entry()
         self.txtNombre = Gtk.Entry()
         self.txtApellido1 = Gtk.Entry()
-        self.txtApellido2 = Gtk.Entry()
         self.txtDirec = Gtk.Entry()
         self.txtTelf = Gtk.Entry()
+        self.txtServicio = Gtk.Entry()
         # BOTÓN DE INSERCCIÓN DE UN NUEVO CLIENTE
         btnNuevo = Gtk.Button("Insertar Cliente")
         btnNuevo.connect("clicked", self.on_btnNovo_clicked, self.modelo)
@@ -195,9 +189,9 @@ class VentanaGestion(Gtk.Window):
         boxH.pack_start(self.txtDni, True, False, 0)
         boxH.pack_start(self.txtNombre, True, False, 0)
         boxH.pack_start(self.txtApellido1, True, False, 0)
-        boxH.pack_start(self.txtApellido2, True, False, 0)
         boxH.pack_start(self.txtDirec, True, False, 0)
         boxH.pack_start(self.txtTelf, True, False, 0)
+        boxH.pack_start(self.txtServicio, True, False, 0)
         boxH.pack_start(btnNuevo, True, False, 0)
 
         # AÑADIMOS LA FUNCIONALIDAD DE BORRAR
@@ -209,6 +203,29 @@ class VentanaGestion(Gtk.Window):
 
         boxH2.pack_start(self.txtDniBorrar, True, False, 0)
         boxH2.pack_start(self.btnBorrar, True, False, 0)
+        """
+        builder2 = Gtk.Builder()
+        builder2.add_from_file("Gestion.glade")
+
+        boxVParte1 = builder2.get_object("boxVParte1")
+
+        # ELEMENTOS GLADE
+        self.btnMostrarTodos = builder2.get_object("btnMostrarTodos")
+        self.btnMostrarTodos.connect("clicked", self.on_btnTodos_clicked, self.modelo)
+
+        self.txtDni = builder2.get_object("txtDni")
+        self.txtNombre = builder2.get_object("txtNombre")
+        self.txtApellido1 = builder2.get_object("txtApellido1")
+        self.txtDirec = builder2.get_object("txtDirec")
+        self.txtTelf = builder2.get_object("txtTelf")
+        self.txtServicio = builder2.get_object("txtServicio")
+
+        self.btnInsertar = builder2.get_object("btnInsertar")
+        self.btnInsertar.connect("clicked", self.on_btnNovo_clicked, self.modelo)
+
+        self.txtDniBorrar = builder2.get_object("txtDniBorrar")
+        self.btnBorrar = builder2.get_object("btnBorrar")
+        self.btnBorrar.connect("clicked", self.on_btnBorrar_clicked, self.modelo)
 
         # AÑADIMOS LA FUNCIONALIDAD DE CONSULTAR
         boxH3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -221,7 +238,7 @@ class VentanaGestion(Gtk.Window):
         modeloCamp.append(["dni", 1])
         modeloCamp.append(["nombre", 2])
         modeloCamp.append(["apellido1", 3])
-        modeloCamp.append(["apellido2", 4])
+        modeloCamp.append(["servicio", 4])
         modeloCamp.append(["direc", 5])
         modeloCamp.append(["telf", 6])
 
@@ -236,7 +253,7 @@ class VentanaGestion(Gtk.Window):
         # QUEREMOS QUE SE MUESTREN LOS CAMPOS, NO LOS NÚMEROS QUE HEMOS PUESTO, POR ESO PONEMOS UN 0, PORQUE EL PARÁMETRO ES EL PRIMERO QUE PUSIMOS EN EL MODELO
         self.cboxCampo.add_attribute(renderer, "text", 0)
 
-        # POR ÚLTIMO, HACEMOS QUE SE MUESTRE EL DNI POR DEFECTO EN EL CBOX (????)
+
 
         boxH3.pack_start(self.cboxCampo, True, False, 0)
 
@@ -244,8 +261,12 @@ class VentanaGestion(Gtk.Window):
         boxH3.pack_start(self.txtCampo, True, False, 0)
         boxH3.pack_start(self.btnBuscar, True, False, 0)
 
-        boxV.pack_start(boxH, True, False, 0)
-        boxV.pack_start(boxH2, True, False, 0)
+        #AÑADIMOS FUNCIONALIDAD DE GENERAR UN INFORME
+        
+
+        # boxV.pack_start(boxH, True, False, 0)
+        # boxV.pack_start(boxH2, True, False, 0)
+        boxV.pack_start(boxVParte1, True, True, 0)
         boxV.pack_start(boxH3, True, False, 0)
 
         # AÑADIMOS LA CAJA A LA VENTANA PRINCIPAL
@@ -266,14 +287,6 @@ class VentanaGestion(Gtk.Window):
     def on_btnNovo_clicked(self, boton, modelo):
 
         # PODRÍAMOS MANEJAR ERRORES, COMO COMPROBAR QUE TODOS LOS CAMPOS ESTÁN RELLENADOS O ALGO ASÍ??
-        # LO AÑADIMOS AL TREE VIEW
-        modelo.append([self.txtDni.get_text(),
-                       self.txtNombre.get_text(),
-                       self.txtApellido1.get_text(),
-                       self.txtApellido2.get_text(),
-                       self.txtDirec.get_text(),
-                       self.txtTelf.get_text()]
-                      )  # indice y columna
 
         # Y A LA BASE DE DATOS:
         try:
@@ -284,9 +297,9 @@ class VentanaGestion(Gtk.Window):
             listaClientes = [(self.txtDni.get_text(),
                               self.txtNombre.get_text(),
                               self.txtApellido1.get_text(),
-                              self.txtApellido2.get_text(),
                               self.txtDirec.get_text(),
-                              self.txtTelf.get_text())
+                              self.txtTelf.get_text(),
+                              self.txtServicio.get_text())
                              ]
 
             # OJO!!! "cursor.executemany()" recorre las listas y sus valores uno a uno y los mete en la BD
@@ -294,10 +307,20 @@ class VentanaGestion(Gtk.Window):
 
             bd2.commit()
 
+            # LO AÑADIMOS AL TREE VIEW
+            modelo.append([self.txtDni.get_text(),
+                           self.txtNombre.get_text(),
+                           self.txtApellido1.get_text(),
+                           self.txtDirec.get_text(),
+                           self.txtTelf.get_text(),
+                           self.txtServicio.get_text()]
+                          )  # indice y columna
+
         except dbapi.OperationalError as errorOperacion:
             print("Error (OperationalError): " + str(errorOperacion))
         except dbapi.DatabaseError as errorBD:
             print("Error (DataBaseError): " + str(errorBD))
+            self.txtDni.set_text("ERROR-DNI YA EXISTE")
 
         finally:
             # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
@@ -381,12 +404,12 @@ class VentanaGestion(Gtk.Window):
                     dni = elemento[0]
                     nombre = elemento[1]
                     apellido1 = elemento[2]
-                    apellido2 = elemento[3]
-                    direc = elemento[4]
-                    telf = elemento[5]
+                    direc = elemento[3]
+                    telf = elemento[4]
+                    servicio = elemento[5]
 
                     print(dni + 'a')
-                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+                    modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
             elif (campo == 'nombre'):
 
@@ -396,12 +419,12 @@ class VentanaGestion(Gtk.Window):
                     dni = elemento[0]
                     nombre = elemento[1]
                     apellido1 = elemento[2]
-                    apellido2 = elemento[3]
-                    direc = elemento[4]
-                    telf = elemento[5]
+                    direc = elemento[3]
+                    telf = elemento[4]
+                    servicio = elemento[5]
 
                     print(dni + 'a')
-                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+                    modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
             elif (campo == 'apellido1'):
 
@@ -411,16 +434,16 @@ class VentanaGestion(Gtk.Window):
                     dni = elemento[0]
                     nombre = elemento[1]
                     apellido1 = elemento[2]
-                    apellido2 = elemento[3]
-                    direc = elemento[4]
-                    telf = elemento[5]
+                    direc = elemento[3]
+                    telf = elemento[4]
+                    servicio = elemento[5]
 
                     print(dni + 'a')
-                    modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
+                    modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
-            elif (campo == 'apellido2'):
+            elif (campo == 'servicio'):
 
-                self.cursor4.execute("""SELECT * FROM clientes WHERE apellido2 ='""" + valorCampo + """'""")
+                self.cursor4.execute("""SELECT * FROM clientes WHERE servicio ='""" + valorCampo + """'""")
 
                 for elemento in self.cursor4.fetchall():
                     dni = elemento[0]
@@ -548,12 +571,12 @@ class VentanaGestion(Gtk.Window):
 
        # CREAMOS TABLA:
        cursor.execute(
-           "create table clientes(dni text,nombre text, apellido1 text, apellido2 text, direc text, telf text)")
+           "create table clientes(dni text primary key,nombre text, apellido1 text, direc text, telf text, servicio text)")
        bd1.commit()
 
        # INSERTAMOS
-       listaClientes = [('31143-U', 'Jandro', 'Perez', 'Alvarez', 'Avenida1', '555444777'),
-                        ('22222-A', 'Pepe', 'Gonzalez', 'Rivas', 'Avenida2', '111222333')]
+       listaClientes = [('31143-U', 'Jandro', 'Alvarez', 'Avenida1', '555444777', 'Almacen'),
+                        ('22222-A', 'Pepe', 'Gonzalez', 'Avenida2', '111222333', 'Seguro')]
 
        # OJO!!! "cursor.executemany()" recorre las listas y sus valores uno a uno y los mete en la BD
        cursor.executemany("INSERT INTO clientes VALUES(?,?,?,?,?,?)", listaClientes)
@@ -574,8 +597,77 @@ class VentanaGestion(Gtk.Window):
        bd1.close()
    """
 
+
+class VentanaServicios(Gtk.Window):
+
+    def __init__(self):
+
+        Gtk.Window.__init__(self, title="Servicios")
+        self.set_default_size(800, 400)
+        # GLADE
+        self.builderCoche = Gtk.Builder()
+        self.builderCoche.add_from_file("ServicioCoche.glade")
+
+        self.builderMoto = Gtk.Builder()
+        self.builderMoto.add_from_file("ServicioMoto.glade")
+
+        # EMPEZAMOS EL TRY AQUÍ PARA QUE NOS PILLE EL MODELO
+        try:
+            # DEJAMOS CREADAS LAS VARIABLES DE BD
+            self.bdSer = dbapi.connect("baseDatosPrueba.dat")
+            # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
+            self.cursorSer = self.bdSer.cursor()
+
+            # Creamos componente Notebook
+            notebookSer = Gtk.Notebook()
+
+            pagina1 = self.builderCoche.get_object("boxCoche")
+            # PARA SEPARAR LOS ELEMENTOS DEL BORDE DE LA CAJA, PONEMOS UNA "ANCHURA DE BORDE" QUE LOS SEPARA
+            pagina1.set_border_width(10)
+
+            # Añadimos la "página" a nuestro notebook, pudiendo darle un título a la solapa:
+            notebookSer.append_page(pagina1, Gtk.Label("Seguros Coche"))
+
+            pagina2 = self.builderMoto.get_object("boxMoto")
+            pagina2.set_border_width(10)
+            notebookSer.append_page(pagina2, Gtk.Label("Seguros Moto"))
+
+            pagina3 = Gtk.Box()
+
+            self.btnInformeServ = Gtk.Button("Generar Informe")
+
+            pagina3.add(self.btnInformeServ)
+
+            pagina3.set_border_width(10)
+            notebookSer.append_page(pagina3, Gtk.Label("Informe"))
+
+
+            self.add(notebookSer)
+
+            # Añadimos la función de salir de la ventana
+            self.connect("destroy", Gtk.main_quit)
+
+            # Y las mostramos
+            self.show_all()
+
+
+
+
+        except dbapi.OperationalError as errorOperacion:
+            print("Error (OperationalError): " + str(errorOperacion))
+
+        except dbapi.DatabaseError as errorBD:
+            print("Error (DataBaseError): " + str(errorBD))
+
+        finally:
+            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+            self.cursorSer.close()
+            self.bdSer.close()
+
+
 # EMPEZAMOS ABRIENDO LA PRINCIPAL, PROBAR A VER QUE PASA SI PONEMOS OTRA CLASE
 if __name__ == "__main__":
     VentanaPrincipal()
     VentanaGestion()
+    VentanaServicios()
     Gtk.main()

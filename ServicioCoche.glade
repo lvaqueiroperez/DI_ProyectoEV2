@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkBox" id="boxCoche">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_top">5</property>
+        <property name="margin_bottom">15</property>
+        <property name="label" translatable="yes">SEGUROS DE COCHE</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Aseguramos tus coches al mejor precio, con más de 10 años de experiencia
+Podrás escoger entre 3 planes distintos:
+
+- Seguro a Todo Riesgo (Desde 1200 euros)
+
+- Seguro a Terceros (Desde 750 euros)
+
+- Seguro a Terceros Ampliado (Desde 850 euros)</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="lblAseguradosCoche">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_left">150</property>
+        <property name="margin_right">150</property>
+        <property name="margin_top">40</property>
+        <property name="label" translatable="yes">Número de Asegurados: 0</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </object>
+</interface>
