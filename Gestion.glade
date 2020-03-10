@@ -155,16 +155,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="txtServicio">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">5</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkButton" id="btnInsertar">
             <property name="label" translatable="yes">Insertar</property>
             <property name="visible">True</property>
@@ -174,6 +164,16 @@
           </object>
           <packing>
             <property name="left_attach">6</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBox" id="cboxInsertar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="left_attach">5</property>
             <property name="top_attach">0</property>
           </packing>
         </child>
@@ -291,7 +291,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton">
+          <object class="GtkButton" id="btnInformeGestion">
             <property name="label" translatable="yes">Generar Informe</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>

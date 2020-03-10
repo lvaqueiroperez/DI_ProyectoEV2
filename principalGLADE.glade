@@ -29,8 +29,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btnServicios">
-            <property name="label" translatable="yes">Servicios</property>
+          <object class="GtkButton" id="btnGestion">
+            <property name="label" translatable="yes">Gestión de clientes</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -47,8 +47,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btnProductos">
-            <property name="label" translatable="yes">Productos</property>
+          <object class="GtkButton" id="btnServicios">
+            <property name="label" translatable="yes">Servicios Disponibles</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
