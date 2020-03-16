@@ -1,6 +1,7 @@
 import gi
-#SI SE CIERRA EL PROGRAMA, PUES SE CERRARÁN TODAS LAS VENTANAS
-#PODEMOS PONER BOTONES DE "VOLVER AL MENÚ PRINCIPAL" EN CADA INTERFAz
+
+# SI SE CIERRA EL PROGRAMA, PUES SE CERRARÁN TODAS LAS VENTANAS
+# PODEMOS PONER BOTONES DE "VOLVER AL MENÚ PRINCIPAL" EN CADA INTERFAz
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
@@ -20,9 +21,9 @@ class VentanaPrincipal():
         self.btnGestion = builder.get_object("btnGestion")
         self.btnServicios = builder.get_object("btnServicios")
 
-        #PASAMOS COMO PARÁMETRO LA VENTANA A ESCONDER, EN LA FUNCIÓN HAREMOS QUE SE MUESTRE LA OTRA
+        # PASAMOS COMO PARÁMETRO LA VENTANA A ESCONDER, EN LA FUNCIÓN HAREMOS QUE SE MUESTRE LA OTRA
         self.btnGestion.connect("clicked", self.on_btnGestion_clicked, self.ventanaPrincipal)
-        self.btnServicios.connect("clicked", self.on_btnServicios_clicked)
+        self.btnServicios.connect("clicked", self.on_btnServicios_clicked, self.ventanaPrincipal)
 
         # MOSTRAMOS LA VENTANA PRINCIPAL
         self.ventanaPrincipal.show_all()
@@ -37,13 +38,17 @@ class VentanaPrincipal():
         from Gestion import VentanaGestion
 
         ventanaGestion = VentanaGestion()
-        #ventanaGestion.connect("delete-event", self.on_destroy)
-        #ventanaGestion.connect("destroy", self.on_destroy)
+        # ventanaGestion.connect("delete-event", self.on_destroy)
+        # ventanaGestion.connect("destroy", self.on_destroy)
         ventanaGestion.show_all()
         ventana.hide()
 
-    def on_btnServicios_clicked(self, boton):
-        """"""
+    def on_btnServicios_clicked(self, boton, ventana):
+        from Servicios import VentanaServicios
+
+        ventanaServicios = VentanaServicios()
+        ventanaServicios.show_all()
+        ventana.hide()
 
 
 # EMPEZAMOS ABRIENDO LA PRINCIPAL, PROBAR A VER QUE PASA SI PONEMOS OTRA CLASE

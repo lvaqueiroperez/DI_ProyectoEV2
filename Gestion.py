@@ -5,11 +5,12 @@ from gi.repository import Gtk, GLib
 
 import sqlite3 as dbapi
 
+from reportlab.platypus import Table, Spacer, SimpleDocTemplate
+from reportlab.lib.pagesizes import A4
+
 
 # VENTANA DE GESTIÓN (aquí haremos todos lo relacionado con la BD)
 # TreeView aquí
-
-
 class VentanaGestion(Gtk.Window):
 
     def __init__(self):
@@ -68,17 +69,15 @@ class VentanaGestion(Gtk.Window):
             # *************************FIN BD***********************************
 
             # FILTROS (AHORA NUESTRO MODELO ESTARÁ FILTRADO Y SE PASARÁ A LLAMAR "modeloFIltrado")
-        self.filtradoOcupacion = False
+        self.filtradoClientes = False
         modeloFiltrado = self.modelo.filter_new()
         # PONEMOS VISIBLE NUESTRO MODELO EN EL TREEVIEW
-        modeloFiltrado.set_visible_func(self.ocupacion)
-        self.modelo.set_sort_func(0, self.ordeAlfabetico)
+        modeloFiltrado.set_visible_func(self.clientes)
 
         # CONSTRUÍMOS EL TREE VIEW CON EL MODELO FILTRADO
         vista = Gtk.TreeView(model=modeloFiltrado)
         # Obtenemos las selecciones del TreeView y les asociamos un evento con una función que manejaremos más adelante
         seleccion = vista.get_selection()
-        seleccion.connect("changed", self.on_vista_changed)
 
         # NECESITAMOS QUE LOS DATOS DEL TREE VIEW SE MUESTREN EN UNA VENTANA CON UN SCROLL DE MANERA CÓMODA:
         # CREAMOS UN FRAME DONDE LOS PONDREMOS
@@ -106,7 +105,6 @@ class VentanaGestion(Gtk.Window):
         # CREAMOS CELDA TEXTO NOMBRE
         celdaNombre = Gtk.CellRendererText()
         celdaNombre.set_property("editable", False)
-        celdaNombre.connect("edited", self.on_celdaDireccion_edited, self.modelo)
 
         # CREAMOS COLUMNA NOMBRE
         columnaNombre = Gtk.TreeViewColumn('NOMBRE', celdaNombre, text=1)
@@ -148,44 +146,6 @@ class VentanaGestion(Gtk.Window):
 
         # ANTES DE NADA, EL BOTÓN DE MOSTRARLOS A TODOS
         # CON GLADE MENOS LA PARTE DE BUSCAR
-        """
-        boxTodos = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.btnTodos = Gtk.Button("VOLVER A MOSTRAR TODOS LOS CLIENTES")
-        self.btnTodos.connect("clicked", self.on_btnTodos_clicked, self.modelo)
-        #
-        boxTodos.pack_start(self.btnTodos, True, False, 0)
-        boxV.pack_start(boxTodos, True, False, 0)
-        # PARA AÑADIR CLIENTES A LA BD:
-        # BOX DONDE PONDREMOS TODOS LO NECESARIO
-        boxH = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.txtDni = Gtk.Entry()
-        self.txtNombre = Gtk.Entry()
-        self.txtApellido1 = Gtk.Entry()
-        self.txtDirec = Gtk.Entry()
-        self.txtTelf = Gtk.Entry()
-        self.txtServicio = Gtk.Entry()
-        # BOTÓN DE INSERCCIÓN DE UN NUEVO CLIENTE
-        btnNuevo = Gtk.Button("Insertar Cliente")
-        btnNuevo.connect("clicked", self.on_btnNovo_clicked, self.modelo)
-
-        boxH.pack_start(self.txtDni, True, False, 0)
-        boxH.pack_start(self.txtNombre, True, False, 0)
-        boxH.pack_start(self.txtApellido1, True, False, 0)
-        boxH.pack_start(self.txtDirec, True, False, 0)
-        boxH.pack_start(self.txtTelf, True, False, 0)
-        boxH.pack_start(self.txtServicio, True, False, 0)
-        boxH.pack_start(btnNuevo, True, False, 0)
-
-        # AÑADIMOS LA FUNCIONALIDAD DE BORRAR
-        boxH2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.txtDniBorrar = Gtk.Entry()
-        self.btnBorrar = Gtk.Button("Borrar Cliente")
-        # BORRAREMOS TAMBIÉN DE LA BASE DE DATOS EL CLIENTE Y REFRESCAREMOS EL TREE VIEW DIRECTAMENTE
-        self.btnBorrar.connect("clicked", self.on_btnBorrar_clicked, self.modelo)
-
-        boxH2.pack_start(self.txtDniBorrar, True, False, 0)
-        boxH2.pack_start(self.btnBorrar, True, False, 0)
-        """
         builder2 = Gtk.Builder()
         builder2.add_from_file("Gestion.glade")
 
@@ -211,6 +171,7 @@ class VentanaGestion(Gtk.Window):
         modeloServ = Gtk.ListStore(str)
         modeloServ.append(["Seguro Coche"])
         modeloServ.append(["Seguro Moto"])
+        modeloServ.append([""])
 
         self.cboxServicioInsertar.set_model(modeloServ)
 
@@ -261,7 +222,18 @@ class VentanaGestion(Gtk.Window):
         boxH3.pack_start(self.txtCampo, True, False, 0)
         boxH3.pack_start(self.btnBuscar, True, False, 0)
 
+        # AÑADIMOS BOTÓN PARA VOLVER AL MENÚ ANTERIOR
+
+        self.btnVolver1 = builder2.get_object("btnVolver1")
+
+        self.btnVolver1.connect("clicked", self.on_btnVolver1_clicked, self)
+
         # AÑADIMOS FUNCIONALIDAD DE GENERAR UN INFORME
+
+        self.txtDniInforme = builder2.get_object("txtDniInforme")
+
+        self.btnInformeGestion = builder2.get_object("btnInformeGestion")
+        self.btnInformeGestion.connect("clicked", self.on_btnInformeGestion_clicked, self.txtDniInforme)
 
         # boxV.pack_start(boxH, True, False, 0)
         # boxV.pack_start(boxH2, True, False, 0)
@@ -276,12 +248,65 @@ class VentanaGestion(Gtk.Window):
         self.show_all()
         self.connect("destroy", Gtk.main_quit)
 
-    # FUNCIONES, NECESARIAS PARA QUE SE MUESTREN NUESTROS ELEMENTOS POR PANTALLA !!!!
-    def on_celdaCheck_toggled(self, control, fila, modelo):  # nos deja marcar/desmarcar las opciones
-        """"""
+    # FUNCIONES PARA INFORMES:
 
-    def on_celdaDireccion_edited(self, control, fila, texto, modelo):  # podemos editar la celda de direcciones
-        """"""
+    def on_btnInformeGestion_clicked(self, boton, dni):
+
+        print("IMPRIMIENDO")
+        # IMPLEMENTAMOS LA BD
+
+        dniText = dni.get_text()
+        print("DNI: " + dniText)
+
+        try:
+
+            self.bdInf = dbapi.connect("baseDatosPrueba.dat")
+            self.cursorInf = self.bdInf.cursor()
+
+            self.cursorInf.execute("""SELECT * FROM clientes WHERE dni='""" + dniText + """'""")
+
+            for elemento in self.cursorInf.fetchall():
+                dniInf = elemento[0]
+                nombreInf = elemento[1]
+                apellido1Inf = elemento[2]
+                direcInf = elemento[3]
+                telfInf = elemento[4]
+                servicioInf = elemento[5]
+
+                guion = []
+
+                fila1 = ['', 'DNI', 'NOMBRE', 'APELLIDO1', 'DIRECCIÓN', 'TELF', 'SERVICIO']
+                fila2 = ['', dniInf, nombreInf, apellido1Inf, direcInf, telfInf, servicioInf]
+
+                taboa = Table([fila1, fila2])
+
+                guion.append(taboa)
+
+                doc = SimpleDocTemplate("informeCliente_" + dniInf + ".pdf", pagesize=A4, showBoundary=0)
+                doc.build(guion)
+                print("IMPRESO")
+
+        except dbapi.OperationalError as errorOperacion:
+            print("Error (OperationalError): " + str(errorOperacion))
+        except dbapi.DatabaseError as errorBD:
+            print("Error (DataBaseError): " + str(errorBD))
+
+        finally:
+            # UNA VEZ ACABADAS LAS OPERACIONES, DEBEMOS CERRAR PRIMERO EL CURSOS Y FINALMENTE LA BD SIEMPRE (finally)
+            self.cursorInf.close()
+            self.bdInf.close()
+
+    # FUNCIONES DE CAMBIO DE VENTANAS
+
+    def on_btnVolver1_clicked(self, boton, ventana):
+        # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
+        from Principal import VentanaPrincipal
+
+        ventanaPrincipal = VentanaPrincipal()
+        ventana.hide()
+        # CUANDO OCULTAMOS ESTA VENTANA, VUELVE A APARECER LA DE "PRINCIPAL" SIN DAR ERRORES (?)
+
+    # FUNCIONES, NECESARIAS PARA QUE SE MUESTREN NUESTROS ELEMENTOS POR PANTALLA !!!!
 
     def on_btnNovo_clicked(self, boton, modelo, combo):
 
@@ -540,29 +565,15 @@ class VentanaGestion(Gtk.Window):
             self.cursor5.close()
             self.bd5.close()
 
-    def on_cboxCampo_changed(self):
-        """"""
-
-    def on_celdaCombo_changed(self, control, posicion, indice, modelo, modeloCat):
-        """"""
-
-    def on_vista_changed(self, seleccion):
-        """"""
-
     # SIN ESTA FUNCIÓN NO SE MUESTRA???
-    def ocupacion(self, modelo, punteiro, a):
-        if self.filtradoOcupacion is None or self.filtradoOcupacion is False:
+    def clientes(self, modelo, punteiro, a):
+        if self.filtradoClientes is None or self.filtradoClientes is False:
             return True
         else:
             return self.modelo[punteiro][2]
 
-    def on_chkFiltro_toggled(self, control, modeloFiltrado):
-        """"""
 
-    def ordeAlfabetico(modelo, fila1, fila2, datosUsuario):
-        """"""
-
-
+# UTILIDADES BD:
 """
    # ABRIR Y CERRAR LA BD CUANDO SE HAGA CADA OPERACIÓN
    #CREAR LA TABLA DE LA BD E INSERTAR 2 FILAS DE EJEMPLO:
