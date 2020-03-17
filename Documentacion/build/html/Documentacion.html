@@ -1,0 +1,247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Documentación Proyecto EV2 &#8212; documentación de proyectoEV2_Doc - 1.0</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="documentacion-proyecto-ev2">
+<h1>Documentación Proyecto EV2<a class="headerlink" href="#documentacion-proyecto-ev2" title="Enlazar permanentemente con este título">¶</a></h1>
+<div class="section" id="principal-py">
+<h2>Principal.py<a class="headerlink" href="#principal-py" title="Enlazar permanentemente con este título">¶</a></h2>
+<div class="section" id="class-ventanaprincipal">
+<h3>class VentanaPrincipal()<a class="headerlink" href="#class-ventanaprincipal" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Clase en la que se creará la ventana principal de la aplicación usando los
+componentes y variables necesarios.</p>
+</div>
+<div class="section" id="def-on-btngestion-clicked-self-boton-ventana">
+<h3>def on_btnGestion_clicked(self, boton, ventana):<a class="headerlink" href="#def-on-btngestion-clicked-self-boton-ventana" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «self.btnGestion»</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Gestion</span> <span class="k">import</span> <span class="n">VentanaGestion</span>
+
+<span class="n">ventanaGestion</span> <span class="o">=</span> <span class="n">VentanaGestion</span><span class="p">()</span>
+<span class="n">ventanaGestion</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+<span class="n">ventana</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Al pulsar el botón, se cerrará la ventana actual y se abrirá la ventana de «Gestión de clientes»</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>ventana: la ventana actual para poder cerrarla</li>
+</ul>
+</div>
+<div class="section" id="def-on-btnservicios-clicked-self-boton-ventana">
+<h3>def on_btnServicios_clicked(self, boton, ventana):<a class="headerlink" href="#def-on-btnservicios-clicked-self-boton-ventana" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «self.btnServicios»</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Gestion</span> <span class="k">import</span> <span class="n">VentanaGestion</span>
+
+<span class="n">ventanaGestion</span> <span class="o">=</span> <span class="n">VentanaGestion</span><span class="p">()</span>
+<span class="n">ventanaGestion</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+<span class="n">ventana</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Al pulsar el botón, se cerrará la ventana actual y se abrirá la ventana de «Servicios»</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>ventana: la ventana actual para poder cerrarla</li>
+</ul>
+</div>
+</div>
+<div class="section" id="gestion-py">
+<h2>Gestion.py<a class="headerlink" href="#gestion-py" title="Enlazar permanentemente con este título">¶</a></h2>
+<div class="section" id="class-ventanaservicios">
+<h3>class VentanaServicios()<a class="headerlink" href="#class-ventanaservicios" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Clase donde se creará la ventana de Gestión de clientes con los componentes y variables necesarios.</p>
+</div>
+<div class="section" id="def-on-btninformegestion-clicked-self-boton-dni">
+<h3>def on_btnInformeGestion_clicked(self, boton, dni):<a class="headerlink" href="#def-on-btninformegestion-clicked-self-boton-dni" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnInformeGestion».
+Una vez pulsado el botón, se buscará en la base de datos el cliente correspondiente a partir del dni indicado y
+se creará un informe con su información usando ReportLab.</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>dni: el dni del cliente deseado</li>
+</ul>
+</div>
+<div class="section" id="def-on-btnvolver1-clicked-self-boton-ventana">
+<h3>def on_btnVolver1_clicked(self, boton, ventana):<a class="headerlink" href="#def-on-btnvolver1-clicked-self-boton-ventana" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnVolver1»
+Una vez pulsado el botón, se cerrará la ventana actual y se abrirá la del menú principal anterior.</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>ventana: la ventana a cerrar</li>
+</ul>
+</div>
+<div class="section" id="def-on-btnnovo-clicked-self-boton-modelo-combo">
+<h3>def on_btnNovo_clicked(self, boton, modelo, combo):<a class="headerlink" href="#def-on-btnnovo-clicked-self-boton-modelo-combo" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnNovo»
+Añade a la base de datos el cliente especificado por el usuario en las celdas de texto con todos sus datos, además
+también lo añade al TreeView para que se pueda visualizar por pantalla.</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>modelo: el modelo del TreeView</li>
+<li>combo: el dato seleccionado en el comboBox del campo «servicio»</li>
+</ul>
+</div>
+<div class="section" id="def-on-btnborrar-clicked-self-boton-modelo">
+<h3>def on_btnBorrar_clicked(self, boton, modelo):<a class="headerlink" href="#def-on-btnborrar-clicked-self-boton-modelo" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnBorrar»
+Borra de la base de datos el cliente especificado por el usuario y también del TreeView.</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>modelo: el modelo del TreeView</li>
+</ul>
+</div>
+<div class="section" id="def-on-btnbuscar-clicked-self-boton-combo-modelo">
+<h3>def on_btnBuscar_clicked(self, boton, combo, modelo):<a class="headerlink" href="#def-on-btnbuscar-clicked-self-boton-combo-modelo" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnBuscar»
+Busca en la base de datos el cliente o clientes especificados por el usuario y los enseña en el TreeView</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>combo: el dato seleccionado en el comboBox «campo»</li>
+<li>modelo: el modelo del TreeView</li>
+</ul>
+</div>
+<div class="section" id="def-on-btntodos-clicked-self-boton-modelo">
+<h3>def on_btnTodos_clicked(self, boton, modelo):<a class="headerlink" href="#def-on-btntodos-clicked-self-boton-modelo" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnTodos»
+Busca en la base de datos todos los clientes y los muestra en el TreeView</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>modelo: el modelo del TreeView</li>
+</ul>
+</div>
+<div class="section" id="def-clientes-self-modelo-punteiro-a">
+<h3>def clientes(self, modelo, punteiro, a):<a class="headerlink" href="#def-clientes-self-modelo-punteiro-a" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que permite mostrar todos los elementos en el TreeView correctamente</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>modelo: el modelo del TreeView</li>
+<li>punteiro</li>
+<li>a</li>
+</ul>
+</div>
+</div>
+<div class="section" id="servicios-py">
+<h2>Servicios.py<a class="headerlink" href="#servicios-py" title="Enlazar permanentemente con este título">¶</a></h2>
+<div class="section" id="class-ventanaservicios-gtk-window">
+<h3>class VentanaServicios(Gtk.Window)<a class="headerlink" href="#class-ventanaservicios-gtk-window" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Clase donde se creará la ventana de «Servicios» usando las variables y componentes necesarios</p>
+</div>
+<div class="section" id="def-on-btnvolver2-clicked-self-boton-ventana">
+<h3>def on_btnVolver2_clicked(self, boton, ventana)<a class="headerlink" href="#def-on-btnvolver2-clicked-self-boton-ventana" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnVolver2»
+Oculta la ventana actual y vuelve a mostrar la ventana «Principal»</p>
+<p>Parámetros:</p>
+<ul class="simple">
+<li>self</li>
+<li>boton</li>
+<li>ventana: la ventana a cerrar</li>
+</ul>
+</div>
+<div class="section" id="def-on-btninforme-clicked-self-boton">
+<h3>def on_btnInforme_clicked(self, boton)<a class="headerlink" href="#def-on-btninforme-clicked-self-boton" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Función que controla el comportamiento del botón «btnInforme»
+Genera un informe general sobre cuantos clientes hay registrados en cada servicio usando ReportLab</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">proyectoEV2_Doc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navegación</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Ir a" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Luis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/Documentacion.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
