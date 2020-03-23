@@ -1,11 +1,10 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
 
 import sqlite3 as dbapi
 # IMPORTS REPORTLAB
-from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
 from reportlab.graphics.shapes import Drawing
 from reportlab.platypus import SimpleDocTemplate
@@ -25,18 +24,18 @@ class VentanaServicios(Gtk.Window):
         self.set_default_size(800, 400)
         # GLADE
         self.builderCoche = Gtk.Builder()
-        self.builderCoche.add_from_file("ServicioCoche.glade")
+        self.builderCoche.add_from_file("./ventanas/ServicioCoche.glade")
 
         self.builderMoto = Gtk.Builder()
-        self.builderMoto.add_from_file("ServicioMoto.glade")
+        self.builderMoto.add_from_file("./ventanas/ServicioMoto.glade")
 
         self.builderPag3 = Gtk.Builder()
-        self.builderPag3.add_from_file("pagina3Box.glade")
+        self.builderPag3.add_from_file("./ventanas/pagina3Box.glade")
 
         # EMPEZAMOS EL TRY AQUÍ PARA QUE NOS PILLE EL MODELO
         try:
             # DEJAMOS CREADAS LAS VARIABLES DE BD
-            self.bdSer = dbapi.connect("baseDatosPrueba.dat")
+            self.bdSer = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
             self.cursorSer = self.bdSer.cursor()
 
@@ -130,7 +129,7 @@ class VentanaServicios(Gtk.Window):
         :return:
         """
         # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
-        from Principal import VentanaPrincipal
+        from ventanas.Principal import VentanaPrincipal
 
         ventanaPrincipal = VentanaPrincipal()
         ventana.hide()
@@ -144,6 +143,7 @@ class VentanaServicios(Gtk.Window):
         :param boton:
         :return:
         """
+        print("Imprimiendo...")
         # añadimos un nuevo dibujo
         d2 = Drawing(300, 200)
 
@@ -193,8 +193,9 @@ class VentanaServicios(Gtk.Window):
 
         d2.add(lenda)
 
-        doc = SimpleDocTemplate("informeGrafica.pdf", pagesize=A4)
+        doc = SimpleDocTemplate("./ventanas/informeGrafica.pdf", pagesize=A4)
         doc.build([d2])
+        print("Impreso")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,2 @@
+Paquete donde se encuentran las ventanas funcionales de la aplicación junto a
+los archivos que necesitan, como una BD y archivos .glade.

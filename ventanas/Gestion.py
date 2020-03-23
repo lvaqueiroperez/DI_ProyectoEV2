@@ -1,11 +1,11 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
 
 import sqlite3 as dbapi
 
-from reportlab.platypus import Table, Spacer, SimpleDocTemplate
+from reportlab.platypus import Table, SimpleDocTemplate
 from reportlab.lib.pagesizes import A4
 
 
@@ -33,7 +33,7 @@ class VentanaGestion(Gtk.Window):
 
             # ************************BD**********************************
 
-            self.bd1 = dbapi.connect("baseDatosPrueba.dat")
+            self.bd1 = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
             self.cursor = self.bd1.cursor()
 
@@ -150,7 +150,7 @@ class VentanaGestion(Gtk.Window):
         # ANTES DE NADA, EL BOTÓN DE MOSTRARLOS A TODOS
         # CON GLADE MENOS LA PARTE DE BUSCAR
         builder2 = Gtk.Builder()
-        builder2.add_from_file("Gestion.glade")
+        builder2.add_from_file("./ventanas/Gestion.glade")
 
         boxVParte1 = builder2.get_object("boxVParte1")
 
@@ -271,7 +271,7 @@ class VentanaGestion(Gtk.Window):
 
         try:
 
-            self.bdInf = dbapi.connect("baseDatosPrueba.dat")
+            self.bdInf = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             self.cursorInf = self.bdInf.cursor()
 
             self.cursorInf.execute("""SELECT * FROM clientes WHERE dni='""" + dniText + """'""")
@@ -293,7 +293,7 @@ class VentanaGestion(Gtk.Window):
 
                 guion.append(taboa)
 
-                doc = SimpleDocTemplate("informeCliente_" + dniInf + ".pdf", pagesize=A4, showBoundary=0)
+                doc = SimpleDocTemplate("./ventanas/informeCliente_" + dniInf + ".pdf", pagesize=A4, showBoundary=0)
                 doc.build(guion)
                 print("IMPRESO")
 
@@ -319,7 +319,7 @@ class VentanaGestion(Gtk.Window):
         :return:
         """
         # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
-        from Principal import VentanaPrincipal
+        from ventanas.Principal import VentanaPrincipal
 
         ventanaPrincipal = VentanaPrincipal()
         ventana.hide()
@@ -353,7 +353,7 @@ class VentanaGestion(Gtk.Window):
 
         # Y A LA BASE DE DATOS:
         try:
-            bd2 = dbapi.connect("baseDatosPrueba.dat")
+            bd2 = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             # Para trabajar con la BD creada, necesitamos cerar un "cursor" para ella
             cursor2 = bd2.cursor()
 
@@ -403,7 +403,7 @@ class VentanaGestion(Gtk.Window):
 
         # BORRAMOS EL CLIENTE ESPECIFICADO DE LA BD Y REFRESCAMOS EL TREE VIEW
         try:
-            self.bd3 = dbapi.connect("baseDatosPrueba.dat")
+            self.bd3 = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             self.cursor3 = self.bd3.cursor()
 
             # ESTE EN CONCRETO NO IBA BIEN CON LAS INTERROGACIONES
@@ -464,15 +464,14 @@ class VentanaGestion(Gtk.Window):
 
         valorCampo = self.txtCampo.get_text()
 
-        print(campo)
-        print(valorCampo)
+        # print(campo)
+        # print(valorCampo)
 
         # NOS CONECTAMOS A LA BD:
         try:
             modelo.clear()
-            self.bd4 = dbapi.connect("baseDatosPrueba.dat")
+            self.bd4 = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             self.cursor4 = self.bd4.cursor()
-            print("s")
 
             if (campo == 'dni'):
 
@@ -486,7 +485,6 @@ class VentanaGestion(Gtk.Window):
                     telf = elemento[4]
                     servicio = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
             elif (campo == 'nombre'):
@@ -501,7 +499,6 @@ class VentanaGestion(Gtk.Window):
                     telf = elemento[4]
                     servicio = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
             elif (campo == 'apellido1'):
@@ -516,7 +513,6 @@ class VentanaGestion(Gtk.Window):
                     telf = elemento[4]
                     servicio = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, direc, telf, servicio])
 
             elif (campo == 'servicio'):
@@ -531,7 +527,6 @@ class VentanaGestion(Gtk.Window):
                     direc = elemento[4]
                     telf = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
 
             elif (campo == 'direc'):
@@ -546,7 +541,6 @@ class VentanaGestion(Gtk.Window):
                     direc = elemento[4]
                     telf = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
 
             elif (campo == 'telf'):
@@ -561,7 +555,6 @@ class VentanaGestion(Gtk.Window):
                     direc = elemento[4]
                     telf = elemento[5]
 
-                    print(dni + 'a')
                     modelo.append([dni, nombre, apellido1, apellido2, direc, telf])
 
 
@@ -590,7 +583,7 @@ class VentanaGestion(Gtk.Window):
 
         try:
 
-            self.bd5 = dbapi.connect("baseDatosPrueba.dat")
+            self.bd5 = dbapi.connect("./ventanas/baseDatosPrueba.dat")
             self.cursor5 = self.bd5.cursor()
 
             self.cursor5.execute("""SELECT * FROM clientes""")

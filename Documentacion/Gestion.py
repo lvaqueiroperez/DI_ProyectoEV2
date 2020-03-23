@@ -1,11 +1,11 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
 
 import sqlite3 as dbapi
 
-from reportlab.platypus import Table, Spacer, SimpleDocTemplate
+from reportlab.platypus import Table, SimpleDocTemplate
 from reportlab.lib.pagesizes import A4
 
 
@@ -319,7 +319,7 @@ class VentanaGestion(Gtk.Window):
         :return:
         """
         # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
-        from Principal import VentanaPrincipal
+        from ventanas.Principal import VentanaPrincipal
 
         ventanaPrincipal = VentanaPrincipal()
         ventana.hide()

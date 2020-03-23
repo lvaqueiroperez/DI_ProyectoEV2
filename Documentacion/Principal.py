@@ -3,9 +3,7 @@ import gi
 # SI SE CIERRA EL PROGRAMA, PUES SE CERRARÁN TODAS LAS VENTANAS
 # PODEMOS PONER BOTONES DE "VOLVER AL MENÚ PRINCIPAL" EN CADA INTERFAz
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
-
-import sqlite3 as dbapi
+from gi.repository import Gtk
 
 
 # OJO !! PONER CBOX EN SERVICIOS Y ACABAR TODOS ANTES DE PONERSE CON LA SEGUNDA PARTE DEL PROYECTO
@@ -47,7 +45,7 @@ class VentanaPrincipal():
 
         """
         # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
-        from Gestion import VentanaGestion
+        from ventanas.Gestion import VentanaGestion
 
         ventanaGestion = VentanaGestion()
         # ventanaGestion.connect("delete-event", self.on_destroy)
@@ -64,7 +62,7 @@ class VentanaPrincipal():
         :param ventana: la ventana actual para poder cerrarla
         :return:
         """
-        from Servicios import VentanaServicios
+        from ventanas.Servicios import VentanaServicios
 
         ventanaServicios = VentanaServicios()
         ventanaServicios.show_all()

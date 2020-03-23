@@ -1,4 +1,19 @@
 include LICENSE
 include *.txt *.in
 include *.py
+include *.dat
+include *.glade
+include *.doctree
+include *.doctrees
+include *.pickle
+include Readme.rst
+include ventanas/baseDatosPrueba.dat
+include ventanas/Gestion.glade
+include ventanas/principalGLADE.glade
+include ventanas/ServicioCoche.glade
+include ventanas/ServicioMoto.glade
+include ventanas/pagina3Box.glade
+recursive-include Documentacion/*
+
+
 global-exclude *-pyc *.pyo *~

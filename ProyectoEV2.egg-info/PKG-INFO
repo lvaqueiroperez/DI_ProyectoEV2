@@ -1,0 +1,15 @@
+Metadata-Version: 1.0
+Name: ProyectoEV2
+Version: 0.12
+Summary: Aplicación para el Proyecto de la EV2
+Home-page: https://www.danielcastelao.org
+Author: Luis
+Author-email: lvaqueiroperez@danielcastelao.org
+License: GLP
+Description: Proyecto para la Segunda Evaluación para la gestión de Clientes y Servicios usando Gtk Python.
+        
+        Documentación del proyecto en la carpeta "Documentacion/build/html/Documentacion.html".
+        
+        La aplicación se iniciará escribiendo en el terminal "Principal".
+Keywords: empaquetado instalador paquetes
+Platform: Unix

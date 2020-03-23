@@ -1,11 +1,10 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
 
 import sqlite3 as dbapi
 # IMPORTS REPORTLAB
-from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
 from reportlab.graphics.shapes import Drawing
 from reportlab.platypus import SimpleDocTemplate
@@ -130,7 +129,7 @@ class VentanaServicios(Gtk.Window):
         :return:
         """
         # PARA CAMBIAR DE VENTANAS TENEMOS QUE IMPORTARLAS PRIMERO
-        from Principal import VentanaPrincipal
+        from ventanas.Principal import VentanaPrincipal
 
         ventanaPrincipal = VentanaPrincipal()
         ventana.hide()
