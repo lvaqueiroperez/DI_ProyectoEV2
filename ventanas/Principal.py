@@ -72,11 +72,11 @@ class VentanaPrincipal():
 
 # EMPEZAMOS ABRIENDO LA PRINCIPAL, PROBAR A VER QUE PASA SI PONEMOS OTRA CLASE
 def main():
+    VentanaPrincipal()
+    # VentanaGestion()
+    # VentanaServicios()
+    Gtk.main()
 
-        VentanaPrincipal()
-        # VentanaGestion()
-        # VentanaServicios()
-        Gtk.main()
 
 if __name__ == "__main__":
     VentanaPrincipal()

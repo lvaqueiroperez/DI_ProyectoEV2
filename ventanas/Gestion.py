@@ -7,6 +7,10 @@ import sqlite3 as dbapi
 
 from reportlab.platypus import Table, SimpleDocTemplate
 from reportlab.lib.pagesizes import A4
+from reportlab.platypus import Paragraph, Image, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 
 
 # VENTANA DE GESTIÓN (aquí haremos todos lo relacionado con la BD)
@@ -291,7 +295,39 @@ class VentanaGestion(Gtk.Window):
 
                 taboa = Table([fila1, fila2])
 
+                # Estilos
+                hojaEstilo = getSampleStyleSheet()
+
+                cabecera = hojaEstilo['Heading4']
+
+                cabecera.keepWithNext = 3
+
+                # PÁRRAFOS
+
+                intro = Paragraph("INFORME DE CLIENTE: ", cabecera)
+
+                espacio = Paragraph("", cabecera)
+
+                espacio2 = Paragraph("", cabecera)
+
+                espacio3 = Paragraph("", cabecera)
+
+                parrafo = Paragraph("Aseguramos coches y motos al mejor precio, con más de 10 años de experiencia.",
+                                    cabecera)
+
+                parrafo2 = Paragraph("Consulta nuestra página web www.segurosAlDia.com para consultar más información",
+                                     cabecera)
+
+                parrafo4 = Paragraph("Número de atención al cliente: 986 500 400", cabecera)
+
+                guion.append(intro)
                 guion.append(taboa)
+                guion.append(espacio)
+                guion.append(espacio2)
+                guion.append(parrafo)
+                guion.append(parrafo2)
+                guion.append(espacio3)
+                guion.append(parrafo4)
 
                 doc = SimpleDocTemplate("./ventanas/informeCliente_" + dniInf + ".pdf", pagesize=A4, showBoundary=0)
                 doc.build(guion)
