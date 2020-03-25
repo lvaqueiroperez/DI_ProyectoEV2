@@ -154,7 +154,7 @@ class VentanaServicios(Gtk.Window):
         tarta.height = 170
         tarta.width = 170
         # tarta.data = [10.456, 20.234, 30.567, 40, 50]
-        tarta.labels = ['Seguro Coche', 'Seguro Moto', 'Sin Seguro']
+        tarta.labels = ['Seguro Coche', 'Seguro Moto', 'Sin Seguro', 'Sin Seguro']
         # porciones
         # tarta.slices.strokeWidth = 0.5
         # tarta.slices[3].popout = 50
@@ -170,28 +170,6 @@ class VentanaServicios(Gtk.Window):
             tarta.slices[i].fillColor = color
 
         d2.add(tarta)
-
-        lenda = Legend()
-        lenda.x = 270
-        lenda.y = 0
-        lenda.dx = 8
-        lenda.dy = 8  # espacio entre lineas (?)
-        lenda.fontName = "Helvetica"
-        lenda.fontSize = 8
-        lenda.boxAnchor = 'n'
-        lenda.columnMaximum = 3
-        lenda.strokeColor = colors.black
-        lenda.deltax = 75
-        lenda.deltay = 10
-        lenda.autoXPadding = 5
-        lenda.yGap = 0
-        lenda.dxTextSpace = 5
-        lenda.alignment = 'right'
-        lenda.dividerLines = 1 | 2 | 4  #
-        lenda.dividerOffsY = 4.5
-        lenda.subCols.rpad = 30
-
-        d2.add(lenda)
 
         doc = SimpleDocTemplate("./ventanas/informeGrafica.pdf", pagesize=A4)
         doc.build([d2])
